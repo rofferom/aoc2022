@@ -15,8 +15,8 @@ fn solve_part1(input: &str) -> u32 {
 fn solve_part2(input: &str) -> u32 {
     let mut values = parse_input(input);
 
-    values.sort_by_key(|i| std::cmp::Reverse(*i));
-    values.into_iter().take(3).sum()
+    values.sort();
+    values.into_iter().rev().take(3).sum()
 }
 
 fn main() {
@@ -28,7 +28,7 @@ fn main() {
 mod tests {
     use super::*;
 
-    const TEST_INPUT: &'static str = "1000
+    const TEST_INPUT: &str = "1000
 2000
 3000
 
