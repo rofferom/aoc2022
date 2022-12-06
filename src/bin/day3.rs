@@ -30,7 +30,7 @@ fn solve_part2(input: &str) -> u32 {
     let mut sum = 0;
 
     for i in 0..lines.len() / 3 {
-        let elves: Vec<HashSet<_>> = lines[i * 3..i * 3 + 3]
+        let elves: Vec<HashSet<_>> = lines[i * 3..(i + 1) * 3]
             .iter()
             .map(|&elve| elve.chars().collect())
             .collect();

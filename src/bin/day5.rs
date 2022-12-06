@@ -29,7 +29,7 @@ fn parse(input: &str) -> (Vec<Vec<char>>, Vec<Instruction>) {
             ParseStep::Crates => {
                 let blocks_count = l.len() / 4;
 
-                for i in 0..blocks_count + 1 {
+                for i in 0..=blocks_count {
                     let c = l.chars().nth(i * 4 + 1).unwrap();
                     if c.is_ascii_digit() {
                         break;
