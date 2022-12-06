@@ -31,7 +31,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn day1() {
+    fn day6() {
         assert_eq!(solve_part1("bvwbjplbgvbhsrlpgdmjqwftvncz"), 5);
         assert_eq!(solve_part1("nppdvjthqldpwncqszvftbrmjlhg"), 6);
         assert_eq!(solve_part1("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg"), 10);

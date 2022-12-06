@@ -63,7 +63,7 @@ ttgJtRGJQctTZtZT
 CrZsJsPPZsGzwwsLwLmpwMDw";
 
     #[test]
-    fn day1() {
+    fn day3() {
         assert_eq!(solve_part1(TEST_INPUT), 157);
         assert_eq!(solve_part1(INPUT), 7793);
 

@@ -86,7 +86,7 @@ mod tests {
 2-6,4-8";
 
     #[test]
-    fn day1() {
+    fn day4() {
         assert_eq!(solve_part1(TEST_INPUT), 2);
         assert_eq!(solve_part1(INPUT), 524);
 

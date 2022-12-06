@@ -132,7 +132,7 @@ B X
 C Z";
 
     #[test]
-    fn day1() {
+    fn day2() {
         assert_eq!(solve_part1(TEST_INPUT), 15);
         assert_eq!(solve_part1(INPUT), 12645);
 
