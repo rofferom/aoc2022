@@ -2,7 +2,10 @@ use std::collections::HashSet;
 
 const INPUT: &str = include_str!("day4_input.txt");
 
-fn parse_input(input: &str) -> Vec<(HashSet<u32>, HashSet<u32>)> {
+fn find_assignments<F>(input: &str, f: F) -> u32
+where
+    F: Fn(HashSet<u32>, HashSet<u32>) -> bool,
+{
     input
         .lines()
         .map(|l| {
@@ -16,15 +19,6 @@ fn parse_input(input: &str) -> Vec<(HashSet<u32>, HashSet<u32>)> {
             let (first, second) = l.split_once(',').unwrap();
             (split(first), split(second))
         })
-        .collect()
-}
-
-fn find_assignments<F>(input: &str, f: F) -> u32
-where
-    F: Fn(HashSet<u32>, HashSet<u32>) -> bool,
-{
-    parse_input(input)
-        .into_iter()
         .fold(0, |acc, (first, second)| acc + u32::from(f(first, second)))
 }
 
