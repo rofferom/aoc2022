@@ -1,4 +1,4 @@
-use std::collections::LinkedList;
+use std::collections::VecDeque;
 
 const INPUT: &str = include_str!("day5_input.txt");
 
@@ -61,7 +61,7 @@ fn parse(input: &str) -> (Vec<Vec<char>>, Vec<Instruction>) {
 fn solve_part1(input: &str) -> String {
     let (columns, instructions) = parse(input);
 
-    let mut columns: Vec<LinkedList<char>> = columns
+    let mut columns: Vec<VecDeque<char>> = columns
         .into_iter()
         .map(|c| c.iter().copied().collect())
         .collect();
@@ -85,9 +85,9 @@ fn solve_part2(input: &str) -> String {
 
     for instr in instructions {
         let column = &mut columns[instr.from - 1];
-        let mut items = column[column.len() - instr.count..column.len()].to_vec();
-
-        column.resize(column.len() - instr.count, ' ');
+        let mut items = column
+            .drain(column.len() - instr.count..column.len())
+            .collect();
         columns[instr.to - 1].append(&mut items);
     }
 
