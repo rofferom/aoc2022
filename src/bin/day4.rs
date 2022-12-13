@@ -9,15 +9,15 @@ struct Range {
 }
 
 impl Range {
-    fn inside(&self, n: u32) -> bool {
+    const fn inside(self, n: u32) -> bool {
         self.begin <= n && n <= self.end
     }
 
-    fn contains(&self, r: &Range) -> bool {
+    const fn contains(self, r: Self) -> bool {
         self.begin <= r.begin && r.end <= self.end
     }
 
-    fn overlaps(&self, r: &Range) -> bool {
+    const fn overlaps(self, r: Self) -> bool {
         self.contains(r)
             || r.contains(self)
             || (self.inside(r.begin) && !self.inside(r.end))
@@ -32,7 +32,7 @@ impl std::str::FromStr for Range {
         let l: Vec<_> = s.split('-').map(|i| u32::from_str(i).unwrap()).collect();
         assert_eq!(l.len(), 2);
 
-        Ok(Range {
+        Ok(Self {
             begin: l[0],
             end: l[1],
         })
@@ -61,12 +61,12 @@ where
 
 fn solve_part1(input: &str) -> u32 {
     find_assignments(input, |first, second| {
-        first.contains(&second) || second.contains(&first)
+        first.contains(second) || second.contains(first)
     })
 }
 
 fn solve_part2(input: &str) -> u32 {
-    find_assignments(input, |first, second| first.overlaps(&second))
+    find_assignments(input, Range::overlaps)
 }
 
 fn main() {

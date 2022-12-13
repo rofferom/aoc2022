@@ -2,22 +2,22 @@ use std::collections::HashSet;
 
 const INPUT: &str = include_str!("day6_input.txt");
 
-fn detect_sequence_start(input: &str, len: usize) -> u32 {
+fn detect_sequence_start(input: &str, len: usize) -> usize {
     for i in 0..input.len() - len - 1 {
         let s: HashSet<_> = input[i..i + len].chars().collect();
         if s.len() == len {
-            return (i + len) as u32;
+            return i + len;
         }
     }
 
     panic!();
 }
 
-fn solve_part1(input: &str) -> u32 {
+fn solve_part1(input: &str) -> usize {
     detect_sequence_start(input, 4)
 }
 
-fn solve_part2(input: &str) -> u32 {
+fn solve_part2(input: &str) -> usize {
     detect_sequence_start(input, 14)
 }
 

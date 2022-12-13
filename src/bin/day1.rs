@@ -15,7 +15,7 @@ fn solve_part1(input: &str) -> u32 {
 fn solve_part2(input: &str) -> u32 {
     let mut values = parse_input(input);
 
-    values.sort();
+    values.sort_unstable();
     values.into_iter().rev().take(3).sum()
 }
 

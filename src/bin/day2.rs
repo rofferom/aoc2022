@@ -18,17 +18,17 @@ fn play(actions: Vec<(Action, Action)>) -> u32 {
             };
 
             let outcome = match (opponent, mine) {
-                (Action::Rock, Action::Rock) => 3,
-                (Action::Rock, Action::Paper) => 6,
-                (Action::Rock, Action::Scissor) => 0,
+                (Action::Rock, Action::Scissor)
+                | (Action::Paper, Action::Rock)
+                | (Action::Scissor, Action::Paper) => 0,
 
-                (Action::Paper, Action::Rock) => 0,
-                (Action::Paper, Action::Paper) => 3,
-                (Action::Paper, Action::Scissor) => 6,
+                (Action::Rock, Action::Rock)
+                | (Action::Paper, Action::Paper)
+                | (Action::Scissor, Action::Scissor) => 3,
 
-                (Action::Scissor, Action::Rock) => 6,
-                (Action::Scissor, Action::Paper) => 0,
-                (Action::Scissor, Action::Scissor) => 3,
+                (Action::Rock, Action::Paper)
+                | (Action::Paper, Action::Scissor)
+                | (Action::Scissor, Action::Rock) => 6,
             };
 
             action_value + outcome
@@ -89,17 +89,17 @@ mod part2 {
                 };
 
                 let action = match (opponent, outcome) {
-                    (Action::Paper, Outcome::Lose) => Action::Rock,
-                    (Action::Paper, Outcome::Draw) => Action::Paper,
-                    (Action::Paper, Outcome::Win) => Action::Scissor,
+                    (Action::Paper, Outcome::Lose)
+                    | (Action::Rock, Outcome::Draw)
+                    | (Action::Scissor, Outcome::Win) => Action::Rock,
 
-                    (Action::Rock, Outcome::Lose) => Action::Scissor,
-                    (Action::Rock, Outcome::Draw) => Action::Rock,
-                    (Action::Rock, Outcome::Win) => Action::Paper,
+                    (Action::Paper, Outcome::Draw)
+                    | (Action::Rock, Outcome::Win)
+                    | (Action::Scissor, Outcome::Lose) => Action::Paper,
 
-                    (Action::Scissor, Outcome::Lose) => Action::Paper,
-                    (Action::Scissor, Outcome::Draw) => Action::Scissor,
-                    (Action::Scissor, Outcome::Win) => Action::Rock,
+                    (Action::Paper, Outcome::Win)
+                    | (Action::Rock, Outcome::Lose)
+                    | (Action::Scissor, Outcome::Draw) => Action::Scissor,
                 };
 
                 (opponent, action)

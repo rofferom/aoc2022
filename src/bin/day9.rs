@@ -10,8 +10,8 @@ struct Position {
 }
 
 impl Position {
-    fn distance(&self, o: &Self) -> f64 {
-        (((self.x - o.x).pow(2) + (self.y - o.y).pow(2)) as f64).sqrt()
+    fn distance(self, o: Self) -> f64 {
+        f64::from((self.x - o.x).pow(2) + (self.y - o.y).pow(2)).sqrt()
     }
 }
 
@@ -46,7 +46,7 @@ fn solve(input: &str, count: usize) -> usize {
                 let prev = knots[idx - 1];
                 let cur = &mut knots[idx];
 
-                if cur.distance(&prev) >= 2.0 {
+                if cur.distance(prev) >= 2.0 {
                     cur.x += match prev.x.cmp(&cur.x) {
                         Ordering::Greater => 1,
                         Ordering::Less => -1,

@@ -79,9 +79,9 @@ fn solve_part1(input: &str) -> String {
 fn solve_part2(input: &str) -> String {
     let (mut columns, instructions) = parse(input);
 
-    columns.iter_mut().for_each(|c| {
+    for c in &mut columns {
         c.reverse();
-    });
+    }
 
     for instr in instructions {
         let column = &mut columns[instr.from - 1];

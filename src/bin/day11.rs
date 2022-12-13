@@ -104,7 +104,7 @@ where
         .into_iter()
         .map(|monkey| monkey.inspected_items)
         .collect();
-    v.sort();
+    v.sort_unstable();
     v.into_iter().rev().take(2).product()
 }
 

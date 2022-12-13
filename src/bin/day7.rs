@@ -16,7 +16,7 @@ struct Directory {
 }
 
 impl Directory {
-    fn iter(d: Rc<RefCell<Directory>>) -> DirectoryIter {
+    fn iter(d: Rc<RefCell<Self>>) -> DirectoryIter {
         DirectoryIter { stack: vec![d] }
     }
 }
@@ -40,13 +40,13 @@ impl Iterator for DirectoryIter {
     }
 }
 
-fn fill_directory_size(root: Rc<RefCell<Directory>>) -> u32 {
+fn fill_directory_size(root: &Rc<RefCell<Directory>>) -> u32 {
     let mut root = root.borrow_mut();
     root.dir_size = root.files_size;
 
     let dirs: Vec<_> = root.dirs.values().cloned().collect();
     for sub in dirs {
-        root.dir_size += fill_directory_size(sub);
+        root.dir_size += fill_directory_size(&sub);
     }
 
     root.dir_size
@@ -81,32 +81,29 @@ fn parse(input: &str) -> Rc<RefCell<Directory>> {
             _ => {
                 let (first, name) = l.split_once(' ').unwrap();
 
-                match first {
-                    "dir" => {
-                        let parent = Rc::downgrade(&cwd);
+                if first == "dir" {
+                    let parent = Rc::downgrade(&cwd);
 
-                        let mut cwd = cwd.borrow_mut();
-                        let path = cwd.path.join(name);
+                    let mut cwd = cwd.borrow_mut();
+                    let path = cwd.path.join(name);
 
-                        cwd.dirs.insert(
-                            name.into(),
-                            Rc::new(RefCell::new(Directory {
-                                path,
-                                parent: Some(parent),
-                                ..Default::default()
-                            })),
-                        );
-                    }
-                    _ => {
-                        let mut cwd = cwd.borrow_mut();
-                        cwd.files_size += first.parse::<u32>().unwrap();
-                    }
+                    cwd.dirs.insert(
+                        name.into(),
+                        Rc::new(RefCell::new(Directory {
+                            path,
+                            parent: Some(parent),
+                            ..Default::default()
+                        })),
+                    );
+                } else {
+                    let mut cwd = cwd.borrow_mut();
+                    cwd.files_size += first.parse::<u32>().unwrap();
                 }
             }
         }
     }
 
-    fill_directory_size(root.clone());
+    fill_directory_size(&root);
 
     root
 }

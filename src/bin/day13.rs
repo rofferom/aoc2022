@@ -8,7 +8,7 @@ struct SignalIterator<'a> {
 }
 
 impl<'a> SignalIterator<'a> {
-    fn new(s: &'a str) -> Self {
+    const fn new(s: &'a str) -> Self {
         Self { s, pos: 0 }
     }
 }
@@ -44,7 +44,7 @@ impl<'a> Iterator for SignalIterator<'a> {
                                     let start = self.pos;
                                     self.pos += i - self.pos + 2;
 
-                                    return Some(Item::List(&self.s[start..i + 1]));
+                                    return Some(Item::List(&self.s[start..=i]));
                                 }
                             }
                             _ => {}
@@ -52,19 +52,16 @@ impl<'a> Iterator for SignalIterator<'a> {
                     }
                 }
                 '0'..='9' => {
-                    let value = match self.s[self.pos..].find(',') {
-                        Some(end) => {
-                            let value: u32 = self.s[self.pos..self.pos + end].parse().unwrap();
-                            self.pos += end + 1;
+                    let value = if let Some(end) = self.s[self.pos..].find(',') {
+                        let value: u32 = self.s[self.pos..self.pos + end].parse().unwrap();
+                        self.pos += end + 1;
 
-                            value
-                        }
-                        None => {
-                            let value: u32 = self.s[self.pos..].parse().unwrap();
-                            self.pos = self.s.len();
+                        value
+                    } else {
+                        let value: u32 = self.s[self.pos..].parse().unwrap();
+                        self.pos = self.s.len();
 
-                            value
-                        }
+                        value
                     };
 
                     return Some(Item::Integer(value));

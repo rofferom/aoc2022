@@ -57,7 +57,7 @@ fn solve_part2(input: &str) -> String {
     const LINE_LEN: usize = 40;
     let cycles_history = gen_cycles(input);
 
-    let mut out = String::from("");
+    let mut out = String::new();
 
     for (position, &x) in cycles_history.iter().enumerate() {
         if (x - 1..=x + 1).contains(&((position % LINE_LEN) as i32)) {
