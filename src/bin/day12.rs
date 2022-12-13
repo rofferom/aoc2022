@@ -77,23 +77,23 @@ fn parse_input(input: &str) -> (Vec<Node>, usize, usize) {
     for i in 0..nodes.len() {
         let node_elevation = nodes[i].elevation;
 
-        let x = i % columns;
-        let y = i / columns;
+        let x = (i % columns) as i32;
+        let y = (i / columns) as i32;
 
-        let directions = [
-            (x > 0, x - 1, y),
-            (x + 1 < columns, x + 1, y),
-            (y > 0, x, y - 1),
-            (y + 1 < rows, x, y + 1),
+        let directions = &[
+            (x > 0, -1, 0),
+            (x + 1 < columns as i32, 1, 0),
+            (y > 0, 0, -1),
+            (y + 1 < rows as i32, 0, 1),
         ];
 
         let mut edges: Vec<_> = directions
-            .into_iter()
-            .filter_map(|(valid, x, y)| {
+            .iter()
+            .filter_map(|(valid, x_delta, y_delta)| {
                 // Filter coordinates outside of the grid and
                 // get their final index
-                if valid {
-                    Some(get_node_idx(x, y))
+                if *valid {
+                    Some(get_node_idx((x + x_delta) as usize, (y + y_delta) as usize))
                 } else {
                     None
                 }
