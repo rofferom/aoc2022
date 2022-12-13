@@ -2,28 +2,25 @@ use std::cmp::Ordering;
 
 const INPUT: &str = include_str!("day13_input.txt");
 
-struct SignalIterator {
-    s: String,
+struct SignalIterator<'a> {
+    s: &'a str,
     pos: usize,
 }
 
-impl SignalIterator {
-    fn new(s: &str) -> Self {
-        Self {
-            s: s.into(),
-            pos: 0,
-        }
+impl<'a> SignalIterator<'a> {
+    fn new(s: &'a str) -> Self {
+        Self { s, pos: 0 }
     }
 }
 
 #[derive(Debug)]
-enum Item {
-    List(String),
+enum Item<'a> {
+    List(&'a str),
     Integer(u32),
 }
 
-impl Iterator for SignalIterator {
-    type Item = Item;
+impl<'a> Iterator for SignalIterator<'a> {
+    type Item = Item<'a>;
 
     fn next(&mut self) -> Option<Self::Item> {
         if self.pos >= self.s.len() {
@@ -47,7 +44,7 @@ impl Iterator for SignalIterator {
                                     let start = self.pos;
                                     self.pos += i - self.pos + 2;
 
-                                    return Some(Item::List(self.s[start..i + 1].to_string()));
+                                    return Some(Item::List(&self.s[start..i + 1]));
                                 }
                             }
                             _ => {}
@@ -93,10 +90,10 @@ fn cmp_signal(left: &str, right: &str) -> Ordering {
                 cmp_signal(&left[1..left.len() - 1], &right[1..right.len() - 1])
             }
             (Some(Item::List(left)), Some(Item::Integer(right))) => {
-                cmp_signal(&left, &format!("[{right}]"))
+                cmp_signal(left, &format!("[{right}]"))
             }
             (Some(Item::Integer(left)), Some(Item::List(right))) => {
-                cmp_signal(&format!("[{left}]"), &right)
+                cmp_signal(&format!("[{left}]"), right)
             }
         };
 
@@ -124,12 +121,12 @@ fn solve_part1(input: &str) -> usize {
 fn solve_part2(input: &str) -> usize {
     let dividers = ["[[2]]", "[[6]]"];
 
-    let mut blocks: Vec<String> = dividers.iter().map(|s| s.to_string()).collect();
+    let mut blocks = dividers.to_vec();
 
     for block in input.split("\n\n") {
         let (left, right) = block.split_once('\n').unwrap();
-        blocks.push(left.into());
-        blocks.push(right.into());
+        blocks.push(left);
+        blocks.push(right);
     }
 
     blocks.sort_by(|left, right| cmp_signal(left, right));
@@ -138,7 +135,7 @@ fn solve_part2(input: &str) -> usize {
         .into_iter()
         .enumerate()
         .filter_map(|(idx, block)| {
-            if dividers.contains(&block.as_str()) {
+            if dividers.contains(&block) {
                 Some(idx + 1)
             } else {
                 None
