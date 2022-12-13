@@ -78,44 +78,30 @@ impl Iterator for SignalIterator {
     }
 }
 
-fn is_order_valid(left: &str, right: &str) -> Option<bool> {
+fn cmp_signal(left: &str, right: &str) -> Ordering {
     let mut left_it = SignalIterator::new(left);
     let mut right_it = SignalIterator::new(right);
 
     loop {
-        match (left_it.next(), right_it.next()) {
-            (Some(Item::Integer(left)), Some(Item::Integer(right))) => match left.cmp(&right) {
-                Ordering::Less => return Some(true),
-                Ordering::Greater => return Some(false),
-                Ordering::Equal => {}
-            },
+        let ordering = match (left_it.next(), right_it.next()) {
+            (None, None) => return Ordering::Equal,
+            (None, Some(_)) => return Ordering::Less,
+            (Some(_), None) => return Ordering::Greater,
+
+            (Some(Item::Integer(left)), Some(Item::Integer(right))) => left.cmp(&right),
             (Some(Item::List(left)), Some(Item::List(right))) => {
-                let valid = is_order_valid(&left[1..left.len() - 1], &right[1..right.len() - 1]);
-                if valid.is_some() {
-                    return valid;
-                }
+                cmp_signal(&left[1..left.len() - 1], &right[1..right.len() - 1])
             }
             (Some(Item::List(left)), Some(Item::Integer(right))) => {
-                let valid = is_order_valid(&left, &format!("[{right}]"));
-                if valid.is_some() {
-                    return valid;
-                }
+                cmp_signal(&left, &format!("[{right}]"))
             }
             (Some(Item::Integer(left)), Some(Item::List(right))) => {
-                let valid = is_order_valid(&format!("[{left}]"), &right);
-                if valid.is_some() {
-                    return valid;
-                }
+                cmp_signal(&format!("[{left}]"), &right)
             }
-            (None, Some(_)) => {
-                return Some(true);
-            }
-            (Some(_), None) => {
-                return Some(false);
-            }
-            (None, None) => {
-                return None;
-            }
+        };
+
+        if ordering != Ordering::Equal {
+            return ordering;
         }
     }
 }
@@ -126,7 +112,7 @@ fn solve_part1(input: &str) -> usize {
         .enumerate()
         .filter_map(|(idx, block)| {
             let (left, right) = block.split_once('\n').unwrap();
-            if let Some(true) = is_order_valid(left, right) {
+            if cmp_signal(left, right) == Ordering::Less {
                 Some(idx + 1)
             } else {
                 None
@@ -146,13 +132,7 @@ fn solve_part2(input: &str) -> usize {
         blocks.push(right.into());
     }
 
-    blocks.sort_by(|a, b| {
-        if is_order_valid(a, b).unwrap() {
-            Ordering::Less
-        } else {
-            Ordering::Greater
-        }
-    });
+    blocks.sort_by(|left, right| cmp_signal(left, right));
 
     blocks
         .into_iter()
@@ -178,15 +158,16 @@ mod tests {
 
     #[test]
     fn day13() {
-        assert!(is_order_valid("[1,1,3,1,1]", "[1,1,5,1,1]").unwrap());
-        assert!(is_order_valid("[[1],[2,3,4]]", "[[1],4]").unwrap());
-        assert!(!is_order_valid("[9]", "[[8,7,6]]").unwrap());
-        assert!(is_order_valid("[[4,4],4,4]", "[[4,4],4,4,4]").unwrap());
-        assert!(!is_order_valid("[7,7,7,7]", "[7,7,7]").unwrap());
-        assert!(is_order_valid("[]", "[3]").unwrap());
-        assert!(!is_order_valid("[[[]]]", "[[]]").unwrap());
-        assert!(
-            !is_order_valid("[1,[2,[3,[4,[5,6,7]]]],8,9]", "[1,[2,[3,[4,[5,6,0]]]],8,9]").unwrap()
+        assert_eq!(cmp_signal("[1,1,3,1,1]", "[1,1,5,1,1]"), Ordering::Less);
+        assert_eq!(cmp_signal("[[1],[2,3,4]]", "[[1],4]"), Ordering::Less);
+        assert_eq!(cmp_signal("[9]", "[[8,7,6]]"), Ordering::Greater);
+        assert_eq!(cmp_signal("[[4,4],4,4]", "[[4,4],4,4,4]"), Ordering::Less);
+        assert_eq!(cmp_signal("[7,7,7,7]", "[7,7,7]"), Ordering::Greater);
+        assert_eq!(cmp_signal("[]", "[3]"), Ordering::Less);
+        assert_eq!(cmp_signal("[[[]]]", "[[]]"), Ordering::Greater);
+        assert_eq!(
+            cmp_signal("[1,[2,[3,[4,[5,6,7]]]],8,9]", "[1,[2,[3,[4,[5,6,0]]]],8,9]"),
+            Ordering::Greater
         );
 
         assert_eq!(solve_part1(TEST_INPUT), 13);
