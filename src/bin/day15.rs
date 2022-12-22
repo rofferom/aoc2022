@@ -119,7 +119,7 @@ fn get_ranges_for_line(pairs: &Vec<Pair>, target_y: i32) -> Vec<RangeInclusive<i
     ranges
 }
 
-fn get_segment_items_sum(pairs: &Vec<Pair>, max_x: i32, target_y: i32) -> i32 {
+fn get_segment_items_sum(pairs: &Vec<Pair>, max_x: i32, target_y: i32) -> usize {
     let ranges = get_ranges_for_line(pairs, target_y);
 
     ranges
@@ -134,7 +134,12 @@ fn get_segment_items_sum(pairs: &Vec<Pair>, max_x: i32, target_y: i32) -> i32 {
                 Some(start..=end)
             }
         })
-        .map(|r| ((*r.end() * (*r.end() + 1)) / 2) - ((*r.start() * (*r.start() - 1)) / 2))
+        .map(|r| {
+            let start = *r.start() as usize;
+            let end = *r.end() as usize;
+
+            ((end * (end + 1)) / 2) - ((start * (start - 1)) / 2)
+        })
         .sum()
 }
 
@@ -145,16 +150,16 @@ fn solve_part1(input: &str, target_y: i32) -> i32 {
     ranges.iter().map(|r| r.end() - r.start()).sum()
 }
 
-fn solve_part2(input: &str, dim: i32) -> usize {
+fn solve_part2(input: &str, dim: usize) -> usize {
     let pairs = parse_input(input);
 
     let line_sum = (dim + 1) * (dim + 2) / 2;
 
     for y in 0..=dim {
-        let sum = get_segment_items_sum(&pairs, dim, y);
+        let sum = get_segment_items_sum(&pairs, dim as i32, y as i32);
         if sum != line_sum {
             let x = line_sum - sum - 1;
-            return x as usize * 4000000 + y as usize;
+            return x * 4000000 + y;
         }
     }
 
